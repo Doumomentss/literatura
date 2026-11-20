@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>La Nona: ¡A Morfar!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="c"></canvas>
+  <div id="vignette"></div>
+  <div id="flash"></div>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hidden">
+    <div id="top">
+      <div id="hudLeft">
+        <div class="chip" id="diaChip">
+          <span class="disp" id="diaN">DÍA 1</span>
+          <span id="diaNombre">Lunes</span>
+        </div>
+        <div id="reloj"><div id="relojFill"></div><span id="relojTxt">MAÑANA</span></div>
+        <div id="guita" class="disp outline"><span class="coin">$</span><span id="guitaN">0</span></div>
+        <div id="modTxt"></div>
+        <div id="efectos"></div>
+      </div>
+
+      <div id="hudCenter">
+        <div id="hambreWrap">
+          <div class="disp outline" id="hambreLabel">HAMBRE DE LA NONA</div>
+          <div id="hambreBar"><div id="hambreFill"></div><div id="hambreGloss"></div></div>
+        </div>
+        <div id="frenesiBar"><div id="frenesiFill"></div><span class="disp">TARANTELA</span></div>
+      </div>
+
+      <div id="hudRight">
+        <div class="disp outline" id="puntos">0</div>
+        <div class="disp outline" id="combo">x1</div>
+        <div id="familia"></div>
+      </div>
+    </div>
+
+    <div id="antojo">
+      <img id="antojoImg" alt="">
+      <div id="antojoTxt">
+        <small>¡QUIERO!</small>
+        <b class="disp" id="antojoNombre">PASTA</b>
+        <div id="antojoBar"><div id="antojoFill"></div></div>
+      </div>
+    </div>
+    <div id="globo" class="disp"></div>
+
+    <div id="pilaMazo" class="pila disp outline">MAZO <b id="mazoN">0</b></div>
+    <div id="pilaDesc" class="pila disp outline">DESCARTE <b id="descN">0</b></div>
+    <div id="ayuda">Clic o <b>1-5</b>: jugar &nbsp;·&nbsp; Clic derecho o <b>Shift+1-5</b>: descartar</div>
+    <div id="tip" class="disp outline"></div>
+
+    <div id="botones">
+      <button class="mini" id="btnMute" title="Sonido (M)">♪</button>
+      <button class="mini" id="btnPausa" title="Pausa (P)">II</button>
+    </div>
+  </div>
+
+  <div id="banner"><div class="disp outline" id="bannerT"></div><div class="disp outline" id="bannerS"></div></div>
+  <div id="floats"></div>
+
+  <!-- ================= PANTALLAS ================= -->
+  <div id="loading" class="screen show solid">
+    <div class="center">
+      <div class="logoMain disp">LA NONA</div>
+      <div id="loadMsg">Poniendo la mesa…</div>
+    </div>
+  </div>
+
+  <div id="scrTitle" class="screen clear">
+    <div class="titleTop">
+      <div class="logo">
+        <span class="logoTop disp">LA</span>
+        <span class="logoMain disp">NONA</span>
+        <span class="logoSub disp">¡A MORFAR!</span>
+      </div>
+    </div>
+    <div class="titleBottom">
+      <p class="tagline">Un grotesco criollo en cartas, inspirado en <i>La Nona</i> de Roberto Cossa</p>
+      <div class="btnRow">
+        <button id="btnJugar" class="btn big disp">JUGAR</button>
+        <button id="btnComo" class="btn disp">CÓMO SE JUEGA</button>
+        <a id="btnReglamento" class="btn disp" href="reglamento.html" target="_blank" rel="noopener">REGLAMENTO</a>
+      </div>
+      <div id="record"></div>
+    </div>
+  </div>
+
+  <div id="scrComo" class="screen">
+    <div class="panel">
+      <h2 class="disp">CÓMO SE JUEGA</h2>
+      <p class="objetivo"><b>OBJETIVO:</b> la familia tiene que mantener a la Nona, que tiene cien años y un hambre infinito. Ganás puntos por cada día que aguantan juntos. Perdés cuando la Nona se morfó a toda la familia.</p>
+      <ul class="reglas">
+        <li><i class="r1">!</i><div><b>La Nona tiene hambre. Siempre.</b> Si la barra de hambre se llena, se da un <b>atracón</b>: se morfa tu mano y un familiar no aguanta más.</div></li>
+        <li><i class="r2">$</i><div>Jugá cartas de <b class="tC">COMIDA</b> para bajarle el hambre. Cuestan <b>guita</b>.</div></li>
+        <li><i class="r3">★</i><div>Si le das <b>justo lo que se le antoja</b> llena más, suma <b>COMBO</b> y carga la <b>TARANTELA</b>: unos segundos de comida gratis a toda velocidad.</div></li>
+        <li><i class="r4">⚒</i><div>Las cartas de <b class="tL">LABURO</b> ocupan un lugar de tu mano un rato y después pagan.</div></li>
+        <li><i class="r5">?</i><div>Las <b class="tA">ARTIMAÑAS</b> son los planes de Chicho para zafar un rato.</div></li>
+        <li><i class="r6">+</i><div>Al terminar cada día elegís una carta nueva para el mazo. Nadie le gana a la Nona: <b>¿cuántos días aguanta la familia?</b></div></li>
+      </ul>
+      <p class="controles"><b>Clic</b> o teclas <b>1-5</b>: jugar carta &nbsp;·&nbsp; <b>Clic derecho</b> o <b>Shift+1-5</b>: descartar &nbsp;·&nbsp; <b>P</b>: pausa &nbsp;·&nbsp; <b>M</b>: sonido<br>En pantalla táctil: tocá para jugar, mantené apretado para descartar.</p>
+      <div class="btnRow"><button id="btnComoOk" class="btn big disp">¡A LA MESA!</button></div>
+    </div>
+  </div>
+
+  <div id="scrReward" class="screen">
+    <div class="rewardBox">
+      <h2 class="disp outline" id="rewardT">¡Sobrevivieron!</h2>
+      <p id="rewardS"></p>
+      <div id="rewardOpts"></div>
+      <div class="btnRow"><button id="btnSkip" class="btn disp">NO LLEVO NADA (+$8)</button></div>
+    </div>
+  </div>
+
+  <div id="scrOver" class="screen">
+    <div class="panel over">
+      <h2 class="disp">LA NONA SIGUE COMIENDO</h2>
+      <p class="overSub" id="overSub">(como siempre)</p>
+      <div id="overFates"></div>
+      <div id="overStats"></div>
+      <div id="overRecord" class="disp"></div>
+      <div class="btnRow">
+        <button id="btnRetry" class="btn big disp">OTRA VEZ</button>
+        <button id="btnMenu" class="btn disp">MENÚ</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="scrPausa" class="screen">
+    <div class="panel small">
+      <h2 class="disp">PAUSA</h2>
+      <p class="overSub">La Nona te espera con el tenedor en la mano.</p>
+      <div class="btnRow">
+        <button id="btnSeguir" class="btn big disp">SEGUIR</button>
+        <button id="btnSalir" class="btn disp">SALIR AL MENÚ</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="scrError" class="screen solid">
+    <div class="panel small"><h2 class="disp">UY…</h2><p id="errMsg"></p></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/models.js"></script>
+<script src="js/world.js"></script>
+<script src="js/cards.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
